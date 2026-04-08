@@ -1,0 +1,59 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+```
+
+```{r load_data}
+library(ggplot2)
+library(dplyr)
+
+# Load your dataset
+latest_data <- read.csv("latest_data.csv")
+
+# Rename columns to simpler names
+latest_data <- latest_data %>%
+  rename(
+    timestamp = Timestamp,
+    time_seen = At.what.time.did.you.see.this.ad...please.use.24h.time.,
+    ad_type = What.type.of.Instagram.ad.was.this.,
+    product_type = What.type.of.product.or.service.was.being.advertised.,
+    seconds_viewed = Approximately.how.many.seconds.did.you.spend.looking.at.this.ad.,
+    relevance = How.relevant.did.this.ad.feel.to.you.
+  )
+
+# Create summary values
+avg_seconds <- mean(latest_data$seconds_viewed)
+avg_relevance <- mean(latest_data$relevance)
+```
+
+## Instagram Ad Engagement Analysis
+
+This dynamic report summarises the Instagram ads I observed over several days. 
+It includes summary values and visualisations that automatically update whenever 
+new data is added to my Google Form.
+
+On average, I spent **`r avg_seconds` seconds** looking at each ad.
+
+The average relevance score was **`r avg_relevance`** out of 5.
+
+```{r}
+ggplot(latest_data, aes(x = ad_type)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Types of Instagram Ads",
+       x = "Ad Type",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+ggplot(latest_data, aes(x = product_type)) +
+  geom_bar(fill = "orange") +
+  labs(title = "Types of Products Advertised",
+       x = "Product Type",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
